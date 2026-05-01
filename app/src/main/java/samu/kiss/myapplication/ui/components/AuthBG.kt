@@ -22,7 +22,7 @@ fun AuthTemplate(
         colors = listOf(
             MaterialTheme.colorScheme.primary,
             MaterialTheme.colorScheme.primary.copy(0f),
-        ), center = Offset(x = 100f, y = 800f), radius = 600f
+        ), center = Offset(x = 100f, y = 800f), radius = 1000f
     )
 
     Box(

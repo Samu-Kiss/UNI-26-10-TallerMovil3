@@ -33,7 +33,7 @@ fun Navigation(){
         composable (route = AppScreens.Home.name){
             HomeScreen(navController)
         }
-        composable (route = AppScreens.SignUp.name){
+        composable (route = AppScreens.Users .name){
             UsersScreen(navController)
         }
     }

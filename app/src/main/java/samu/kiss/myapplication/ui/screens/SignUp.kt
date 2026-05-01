@@ -1,7 +1,9 @@
 package samu.kiss.myapplication.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -55,69 +59,89 @@ fun SignUpForm(
     var id by remember { mutableStateOf("") }
 
     val emailRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$""")
-    val passwordRegex = Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
+    val passwordRegex =
+        Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
     val idRegex = Regex("""^\d{6,10}$""")
 
-    val isSignUpEnabled = names.isNotBlank() && lastName.isNotBlank() && emailRegex.matches(email) && passwordRegex.matches(password) && idRegex.matches(id)
+    val isSignUpEnabled =
+        names.isNotBlank() && lastName.isNotBlank() && emailRegex.matches(email) && passwordRegex.matches(
+            password
+        ) && idRegex.matches(id)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Campo: Nombre
-        AuthPlainText(
-            value = names,
-            onValueChange = { names = it },
-            label = "Nombres",
-            placeholder = "Nombres"
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .blur(50.dp)
+                .background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(50))
         )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(24.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.25f),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .border(
+                    width = 1.2.dp,
+                    color = Color.White.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Campo: Nombre
+            AuthPlainText(
+                value = names,
+                onValueChange = { names = it },
+                label = "Nombres",
+                placeholder = "Nombres"
+            )
 
-        // Campo: Apellidos
-        AuthPlainText(
-            value = lastName,
-            onValueChange = { lastName = it },
-            label = "Apellidos",
-            placeholder = "Apellidos"
-        )
+            // Campo: Apellidos
+            AuthPlainText(
+                value = lastName,
+                onValueChange = { lastName = it },
+                label = "Apellidos",
+                placeholder = "Apellidos"
+            )
 
-        // Campo: Correo
-        AuthEmailText(
-            value = email,
-            onValueChange = { email = it },
-            label = "Correo",
-            placeholder = "correo@gmail.com"
-        )
+            // Campo: Correo
+            AuthEmailText(
+                value = email,
+                onValueChange = { email = it },
+                label = "Correo",
+                placeholder = "correo@gmail.com"
+            )
 
-        // Campo: Contraseña
-        AuthPasswordText(
-            value = password,
-            onValueChange = { password = it },
-            label = "Contraseña",
-            placeholder = "********"
-        )
+            // Campo: Contraseña
+            AuthPasswordText(
+                value = password,
+                onValueChange = { password = it },
+                label = "Contraseña",
+                placeholder = "********"
+            )
 
-        // Campo: Identificación
-        AuthIdText(
-            value = id,
-            onValueChange = { id = it },
-            label = "Identificación",
-            placeholder = "123456"
-        )
+            // Campo: Identificación
+            AuthIdText(
+                value = id,
+                onValueChange = { id = it },
+                label = "Identificación",
+                placeholder = "123456"
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Botón: Registrarse
-        MyButton(
-            text = "Registrarse",
-            onClick = { onClick(email, password) },
-            style = MyButtonStyle.Primary,
-            enabled = isSignUpEnabled,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            // Botón: Registrarse
+            MyButton(
+                text = "Registrarse",
+                onClick = { onClick(email, password) },
+                style = MyButtonStyle.Primary,
+                enabled = isSignUpEnabled,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
