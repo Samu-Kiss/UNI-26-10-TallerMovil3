@@ -233,6 +233,33 @@ fun AuthPasswordText(
     )
 }
 
+//ID TEXT FIELD
+/**
+ * TextField para ingresar el número de identificación. Valida que tenga entre 6 y 10 dígitos.
+ * Solo permite caracteres numéricos.
+ * @param value El número de identificación ingresado por el usuario
+ * @param onValueChange Callback que recibe el nuevo valor cada vez que el usuario cambia el texto
+ * @param label Etiqueta del campo (por defecto "Identificación")
+ * @param placeholder Texto de ejemplo que se muestra cuando el campo está vacío (por defecto "123456")
+ */
+@Composable
+fun AuthIdText(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String = "Identificación",
+    placeholder: String = "123456"
+) {
+    MyTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        placeholder = placeholder,
+        validationRegex = Regex("""^\d{6,10}$"""),
+        errorMessage = "La identificación debe tener entre 6 y 10 dígitos",
+        keyboardType = KeyboardType.Number
+    )
+}
+
 @Preview(showBackground = true, name = "Auth TextFields - Light")
 @Composable
 private fun AuthTextFieldsLightPreview() {
