@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.AppTheme
 
 @Composable
 fun SignUpScreen(
@@ -27,5 +28,7 @@ fun SignUpScreen(
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen(rememberNavController())
+    AppTheme {
+        SignUpScreen(rememberNavController())
+    }
 }

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.AppTheme
 
 @Composable
 fun LogInScreen(
@@ -27,5 +28,7 @@ fun LogInScreen(
 @Preview(showBackground = true)
 @Composable
 fun LogInScreenPreview() {
-    LogInScreen(rememberNavController())
+    AppTheme {
+        LogInScreen(rememberNavController())
+    }
 }
