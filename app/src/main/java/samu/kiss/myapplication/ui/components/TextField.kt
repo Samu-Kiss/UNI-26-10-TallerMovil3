@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -142,7 +144,7 @@ private fun TextFieldLightPreview() {
                 keyboardType = KeyboardType.Email,
                 trailingIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_eye_open),
+                        imageVector = Icons.Rounded.Visibility,
                         contentDescription = "Eye Icon",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -183,7 +185,7 @@ private fun TextFieldDarkPreview() {
                 keyboardType = KeyboardType.Email,
                 trailingIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_eye_open),
+                        imageVector = Icons.Rounded.Visibility,
                         contentDescription = "Eye Icon",
                         tint = MaterialTheme.colorScheme.onSurface
                     )

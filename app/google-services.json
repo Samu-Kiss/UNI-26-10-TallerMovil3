@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988186797630",
+    "project_id": "taller3-ffb65",
+    "storage_bucket": "taller3-ffb65.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988186797630:android:5f9377c081a68dc0bd136f",
+        "android_client_info": {
+          "package_name": "samu.kiss.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSXDhEXjbpZwolF5wuMW0itNb0t5nZzZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

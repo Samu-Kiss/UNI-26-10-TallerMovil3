@@ -3,6 +3,9 @@ package samu.kiss.myapplication.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -22,7 +24,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
-import samu.kiss.myapplication.R
 
 
 //PLAIN TEXT FIELD
@@ -219,9 +220,7 @@ fun AuthPasswordText(
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    painter = painterResource(
-                        id = if (passwordVisible) R.drawable.ic_eye_open else R.drawable.ic_eye_crossed
-                    ),
+                    imageVector = if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
                     contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -263,7 +262,7 @@ fun AuthIdText(
 @Preview(showBackground = true, name = "Auth TextFields - Light")
 @Composable
 private fun AuthTextFieldsLightPreview() {
-    AppTheme (darkTheme = false) {
+    AppTheme(darkTheme = false) {
         var name by remember { mutableStateOf("Samu P") }
         var phone by remember { mutableStateOf("+573012345678") }
         var email by remember { mutableStateOf("sa.pico@javeriana.edu.co") }
