@@ -59,7 +59,8 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
         }
     }
     if(permission.status.isGranted) {
-        locationViewModel.updateVel()
+        if(!locationViewModel.permissionGranted)
+            locationViewModel.updateVel()
         userPosition = Location(state.latitude, state.longitude, "User")
     }
     MyScaffold {
