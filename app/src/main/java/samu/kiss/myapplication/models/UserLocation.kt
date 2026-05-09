@@ -9,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +28,7 @@ data class UserLocationState(
 class UserLocationViewModel(application: Application): AndroidViewModel(application){
     private val _uiState = MutableStateFlow(UserLocationState())
     val uiState: StateFlow<UserLocationState> = _uiState.asStateFlow()
+    private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
 
     val context = getApplication<Application>()
     val locationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -39,14 +42,31 @@ class UserLocationViewModel(application: Application): AndroidViewModel(applicat
                 )}
 
             Log.i("Informativo","${result}")
+
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid != null) {
+                //https://stackoverflow.com/questions/53317966/how-to-update-user-in-the-following-structure
+                dbUsers.child(uid).updateChildren(
+                    mapOf(
+                        "latitude"  to result.lastLocation!!.latitude,
+                        "longitude" to result.lastLocation!!.longitude
+                    )
+                ).addOnFailureListener { e ->
+                    Log.w("My Application", "Error guardando ubicación: ${e.localizedMessage}")
+                }
+            } else {
+                Log.w("My Application", "No hay usuario autenticado, ubicación no guardada")
+            }
         }
     }
-    var locationRequest : LocationRequest = createLocationRequest()
+
+    var locationRequest: LocationRequest = createLocationRequest()
     var permissionGranted = false
     var vel: Task<Void>? = null
+
     fun updateVel() {
-        Log.i("Informativo","Logrado")
-        if(!permissionGranted) {
+        Log.i("Informativo", "Logrado")
+        if (!permissionGranted) {
             permissionGranted = true
             if (ContextCompat.checkSelfPermission(
                     context,
