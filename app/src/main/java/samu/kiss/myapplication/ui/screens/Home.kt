@@ -38,6 +38,7 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
     val bogota = LatLng(4.627293, -74.063228)
     var userPosition: Location? = null
     val bogotaMarkerState = rememberUpdatedMarkerState(position = bogota)
+    var hasCenteredCamera by remember { mutableStateOf(false) }
     val markers = loadLocations(context)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(bogota, 12f)
@@ -45,10 +46,11 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
     var permission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
     var showButton by remember { mutableStateOf(false) }
     LaunchedEffect(state.latitude, state.longitude) {
-        if (state.latitude != 0.0 && state.longitude != 0.0) {
+        if (!hasCenteredCamera && state.latitude != 0.0 && state.longitude != 0.0) {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(
                 LatLng(state.latitude, state.longitude), 15f
             )
+            hasCenteredCamera = true
         }
     }
     SideEffect {
