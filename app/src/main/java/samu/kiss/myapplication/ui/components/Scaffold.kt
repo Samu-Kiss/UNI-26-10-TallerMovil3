@@ -133,10 +133,15 @@ fun MyTopAppBar(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.tertiary
                         )
-                    }, onClick = { showMenu = false })
+                    }, onClick = {
+                        showMenu = false
+                        navController.navigate(AppScreens.Home.name) {
+                            launchSingleTop = true
+                        }
+                    })
                     DropdownMenuItem(text = {
                         Text(
-                            "Perfil", color = MaterialTheme.colorScheme.tertiary
+                            "Personas", color = MaterialTheme.colorScheme.tertiary
                         )
                     }, leadingIcon = {
                         Icon(
@@ -144,7 +149,12 @@ fun MyTopAppBar(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.tertiary
                         )
-                    }, onClick = { showMenu = false })
+                    }, onClick = {
+                        showMenu = false
+                        navController.navigate(AppScreens.Users.name) {
+                            launchSingleTop = true
+                        }
+                    })
                     DropdownMenuItem(text = {
                         Text(
                             text = if (isAvailable) "Disponible" else "No disponible",
@@ -180,8 +190,7 @@ fun MyTopAppBar(
                 }
             })
     }
-}
-/*
+}/*
 @Preview
 @Composable
 fun MyScaffoldPreview() {
