@@ -34,6 +34,7 @@ import samu.kiss.myapplication.models.Location
 import samu.kiss.myapplication.models.UserLocationViewModel
 import samu.kiss.myapplication.ui.components.MyScaffold
 import samu.kiss.myapplication.utils.loadLocations
+import samu.kiss.myapplication.ui.components.MyScaffold
 
 
 

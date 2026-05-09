@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,13 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import samu.kiss.myapplication.R
 
 
 // Definición de tipos de botón
@@ -68,7 +68,7 @@ fun MyButton(
     size: MyButtonSize = MyButtonSize.Medium,
     enabled: Boolean = true,
     loading: Boolean = false,
-    icon: Painter? = null,
+    icon: ImageVector? = null,
     iconContentDescription: String? = null
 ) {
     val contentPadding =
@@ -192,7 +192,7 @@ private fun ButtonContent(
     textColor: Color,
     loading: Boolean,
     loaderColor: Color,
-    icon: Painter?,
+    icon: ImageVector?,
     iconContentDescription: String?,
     iconSize: Dp,
     enabled: Boolean
@@ -208,7 +208,7 @@ private fun ButtonContent(
     // Definición del icono del botón, solo se muestra si no está en estado de carga
     if (icon != null && !loading) {
         Icon(
-            painter = icon,
+            imageVector = icon,
             contentDescription = iconContentDescription,
             modifier = Modifier.size(iconSize)
         )
@@ -242,7 +242,7 @@ private fun ButtonLightPreview() {
             MyButton(
                 text = "With Icon",
                 onClick = {},
-                icon = painterResource(id = R.drawable.ic_eye_open),
+                icon = Icons.Rounded.Check,
                 iconContentDescription = "Check Icon"
             )
         }
@@ -268,8 +268,8 @@ private fun ButtonDarkPreview() {
             MyButton(
                 text = "With Icon",
                 onClick = {},
-                icon = painterResource(id = R.drawable.ic_eye_open),
-                iconContentDescription = "Plus Icon"
+                icon = Icons.Rounded.Check,
+                iconContentDescription = "Check Icon"
             )
         }
     }
