@@ -62,7 +62,10 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
         if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
         userPosition = Location(state.latitude, state.longitude, "User")
     }
-    MyScaffold {
+    MyScaffold(
+        navController = controller, locationViewModel = locationViewModel
+    ) {
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

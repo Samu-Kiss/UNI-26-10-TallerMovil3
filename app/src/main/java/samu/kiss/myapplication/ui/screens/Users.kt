@@ -1,5 +1,5 @@
 package samu.kiss.myapplication.ui.screens
-
+import samu.kiss.myapplication.models.UserLocationViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,16 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import samu.kiss.myapplication.ui.components.MyScaffold
 
 @Composable
-fun UsersScreen(
-    controller: NavHostController
-) {
-    MyScaffold {
+fun UsersScreen(controller: NavHostController, locationViewModel: UserLocationViewModel) {
+    MyScaffold (   navController = controller,
+        locationViewModel = locationViewModel){
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -27,11 +28,11 @@ fun UsersScreen(
         }
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun UsersScreenPreview() {
     AppTheme {
         UsersScreen(rememberNavController())
     }
-}
+}*/

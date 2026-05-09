@@ -32,7 +32,7 @@ fun Navigation(locationViewModel: UserLocationViewModel = viewModel()) {
             HomeScreen(navController, locationViewModel)
         }
         composable(route = AppScreens.Users.name) {
-            UsersScreen(navController)
+            UsersScreen(navController,locationViewModel)
         }
     }
 }

@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,27 +24,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import samu.kiss.myapplication.models.UserLocationViewModel
+import samu.kiss.myapplication.navigation.AppScreens
 
 @Composable
 fun MyScaffold(
+    navController: NavHostController,
+    locationViewModel: UserLocationViewModel,
     content: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(topBar = {
-        MyTopAppBar()
+        MyTopAppBar(navController = navController, locationViewModel = locationViewModel)
     }, content = { innerPadding ->
         Box(
             modifier = Modifier
@@ -55,11 +60,15 @@ fun MyScaffold(
     })
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar() {
+fun MyTopAppBar(
+    navController: NavHostController, locationViewModel: UserLocationViewModel
+) {
 
     var showMenu by remember { mutableStateOf(false) }
+    val isAvailable by locationViewModel.isAvailable.collectAsState()
     val glassBrush = Brush.linearGradient(
         colors = listOf(
             MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
@@ -116,8 +125,7 @@ fun MyTopAppBar() {
                 ) {
                     DropdownMenuItem(text = {
                         Text(
-                            "Inicio",
-                            color = MaterialTheme.colorScheme.tertiary
+                            "Inicio", color = MaterialTheme.colorScheme.tertiary
                         )
                     }, leadingIcon = {
                         Icon(
@@ -128,8 +136,7 @@ fun MyTopAppBar() {
                     }, onClick = { showMenu = false })
                     DropdownMenuItem(text = {
                         Text(
-                            "Perfil",
-                            color = MaterialTheme.colorScheme.tertiary
+                            "Perfil", color = MaterialTheme.colorScheme.tertiary
                         )
                     }, leadingIcon = {
                         Icon(
@@ -140,21 +147,41 @@ fun MyTopAppBar() {
                     }, onClick = { showMenu = false })
                     DropdownMenuItem(text = {
                         Text(
-                            "Configuración",
-                            color = MaterialTheme.colorScheme.tertiary
+                            text = if (isAvailable) "Disponible" else "No disponible",
+                            color = if (isAvailable) Color(0xFF7DA67F) else MaterialTheme.colorScheme.tertiary
                         )
                     }, leadingIcon = {
                         Icon(
-                            Icons.Rounded.Settings,
+                            Icons.Rounded.LocationOn,
+                            contentDescription = null,
+                            tint = if (isAvailable) Color(0xFF7DA67F) else MaterialTheme.colorScheme.tertiary
+                        )
+                    }, onClick = {
+                        locationViewModel.setAvailable(!isAvailable)
+                        showMenu = false
+                    })
+                    DropdownMenuItem(text = {
+                        Text(
+                            "Cerrar sesión", color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }, leadingIcon = {
+                        Icon(
+                            Icons.Rounded.ExitToApp,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.tertiary
                         )
-                    }, onClick = { showMenu = false })
+                    }, onClick = {
+                        showMenu = false
+                        locationViewModel.signOut()
+                        navController.navigate(AppScreens.Splash.name) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    })
                 }
             })
     }
 }
-
+/*
 @Preview
 @Composable
 fun MyScaffoldPreview() {
@@ -168,4 +195,4 @@ fun MyScaffoldPreview() {
             Text(text = "Hello Scaffold!")
         }
     }
-}
+}*/

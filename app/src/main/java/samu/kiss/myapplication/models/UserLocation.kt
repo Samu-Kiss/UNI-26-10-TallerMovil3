@@ -29,6 +29,8 @@ class UserLocationViewModel(application: Application): AndroidViewModel(applicat
     private val _uiState = MutableStateFlow(UserLocationState())
     val uiState: StateFlow<UserLocationState> = _uiState.asStateFlow()
     private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
+    private val _isAvailable = MutableStateFlow(false)
+    val isAvailable: StateFlow<Boolean> = _isAvailable.asStateFlow()
 
     val context = getApplication<Application>()
     val locationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -43,19 +45,21 @@ class UserLocationViewModel(application: Application): AndroidViewModel(applicat
 
             Log.i("Informativo","${result}")
 
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                //https://stackoverflow.com/questions/53317966/how-to-update-user-in-the-following-structure
-                dbUsers.child(uid).updateChildren(
-                    mapOf(
-                        "latitude"  to result.lastLocation!!.latitude,
-                        "longitude" to result.lastLocation!!.longitude
-                    )
-                ).addOnFailureListener { e ->
-                    Log.w("My Application", "Error guardando ubicación: ${e.localizedMessage}")
+            if (_isAvailable.value) {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid != null) {
+                    // https://stackoverflow.com/questions/53317966/how-to-update-user-in-the-following-structure
+                    dbUsers.child(uid).updateChildren(
+                        mapOf(
+                            "latitude" to result.lastLocation!!.latitude,
+                            "longitude" to result.lastLocation!!.longitude
+                        )
+                    ).addOnFailureListener { e ->
+                        Log.w("My Application", "Error guardando ubicación: ${e.localizedMessage}")
+                    }
+                } else {
+                    Log.w("My Application", "No hay usuario autenticado, ubicación no guardada")
                 }
-            } else {
-                Log.w("My Application", "No hay usuario autenticado, ubicación no guardada")
             }
         }
     }
@@ -63,6 +67,23 @@ class UserLocationViewModel(application: Application): AndroidViewModel(applicat
     var locationRequest: LocationRequest = createLocationRequest()
     var permissionGranted = false
     var vel: Task<Void>? = null
+
+    fun setAvailable(available: Boolean) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        _isAvailable.value = available
+
+        dbUsers.child(uid).updateChildren(mapOf("available" to available))
+            .addOnFailureListener { e ->
+                Log.w("My Application", "Error actualizando disponibilidad: ${e.localizedMessage}")
+            }
+    }
+
+    fun signOut() {
+        setAvailable(false)
+        FirebaseAuth.getInstance().signOut()
+        _isAvailable.value = false
+        permissionGranted = false
+    }
 
     fun updateVel() {
         Log.i("Informativo", "Logrado")
