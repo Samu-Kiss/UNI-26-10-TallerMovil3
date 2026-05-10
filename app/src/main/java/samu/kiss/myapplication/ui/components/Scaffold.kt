@@ -1,5 +1,6 @@
 package samu.kiss.myapplication.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -169,6 +170,7 @@ fun MyTopAppBar(
                     }, onClick = {
                         locationViewModel.setAvailable(!isAvailable)
                         showMenu = false
+                        Log.d("Disponibilidad", "Boton presionado de disponible")
                     })
                     DropdownMenuItem(text = {
                         Text(
@@ -182,9 +184,10 @@ fun MyTopAppBar(
                         )
                     }, onClick = {
                         showMenu = false
-                        locationViewModel.signOut()
-                        navController.navigate(AppScreens.Splash.name) {
-                            popUpTo(0) { inclusive = true }
+                        locationViewModel.signOut {
+                            navController.navigate(AppScreens.Splash.name) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     })
                 }

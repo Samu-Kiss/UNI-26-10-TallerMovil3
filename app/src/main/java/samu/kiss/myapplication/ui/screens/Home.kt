@@ -53,6 +53,10 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
             hasCenteredCamera = true
         }
     }
+    LaunchedEffect(Unit) {
+        locationViewModel.observeAvailableFromFirebase()
+    }
+
     SideEffect {
         if (!permission.status.isGranted) {
             permission.launchPermissionRequest()

@@ -98,7 +98,8 @@ class RegisterViewModel : ViewModel() {
             idNumber = s.idNumber,
             photoUrl = photoUrl,
             latitude = 0.0,
-            longitude = 0.0
+            longitude = 0.0,
+            available = false,
         )
         FirebaseDatabase.getInstance().getReference("users").child(uid).setValue(user)
             .addOnSuccessListener {
