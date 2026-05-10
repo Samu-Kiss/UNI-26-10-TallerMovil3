@@ -10,33 +10,29 @@ import samu.kiss.myapplication.models.UserLocationViewModel
 import samu.kiss.myapplication.ui.screens.*
 
 enum class AppScreens {
-    Splash,
-    SignUp,
-    LogIn,
-    Home,
-    Users
+    Splash, SignUp, LogIn, Home, Users
 }
 
 @Composable
-fun Navigation(locationViewModel: UserLocationViewModel = viewModel()){
+fun Navigation(locationViewModel: UserLocationViewModel = viewModel()) {
 
     val navController = rememberNavController()
 
-    NavHost(navController=navController, startDestination = AppScreens.Home.name){
-        composable (route = AppScreens.Splash.name){
+    NavHost(navController = navController, startDestination = AppScreens.Splash.name) {
+        composable(route = AppScreens.Splash.name) {
             SplashScreen(navController)
         }
-        composable (route = AppScreens.SignUp.name){
+        composable(route = AppScreens.SignUp.name) {
             SignUpScreen(navController)
         }
-        composable(route = AppScreens.LogIn.name){
+        composable(route = AppScreens.LogIn.name) {
             LogInScreen(navController)
         }
-        composable (route = AppScreens.Home.name){
+        composable(route = AppScreens.Home.name) {
             HomeScreen(navController, locationViewModel)
         }
-        composable (route = AppScreens.Users .name){
-            UsersScreen(navController)
+        composable(route = AppScreens.Users.name) {
+            UsersScreen(navController,locationViewModel)
         }
     }
 }

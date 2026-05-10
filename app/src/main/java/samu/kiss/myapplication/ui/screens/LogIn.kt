@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -22,9 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import samu.kiss.myapplication.models.LoginViewModel
 import samu.kiss.myapplication.ui.components.AuthEmailText
 import samu.kiss.myapplication.ui.components.AuthPasswordText
 import samu.kiss.myapplication.ui.components.AuthTemplate
@@ -33,12 +36,25 @@ import samu.kiss.myapplication.ui.components.MyButtonStyle
 
 @Composable
 fun LogInScreen(
-    controller: NavHostController
+    controller: NavHostController, loginViewModel: LoginViewModel = viewModel()
 ) {
+    val state = loginViewModel.loginState.collectAsState().value
+
     AuthTemplate {
-        LogInForm { email, password ->
-            //TODO: Implementar lógica de inicio de sesión con email y password
-        }
+        LogInForm(
+            email = state.email,
+            password = state.password,
+            isLoading = state.isLoading,
+            errorMessage = state.emailErr.ifEmpty { state.passwordErr }.ifEmpty { null },
+            onEmailChange = { loginViewModel.updateEmail(it) },
+            onPasswordChange = { loginViewModel.updatePassword(it) },
+            onClick = {
+                loginViewModel.login {
+                    controller.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            })
     }
 }
 
@@ -52,12 +68,8 @@ fun LogInForm(
     onPasswordChange: (String) -> Unit = {},
     isLoading: Boolean = false,
     errorMessage: String? = null,
-    onClick: (email: String, password: String) -> Unit = { _, _ -> },
+    onClick: () -> Unit = {},
 ) {
-    val emailRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$""")
-    val passwordRegex =
-        Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
-    val isLoginEnabled = emailRegex.matches(email) && passwordRegex.matches(password) && !isLoading
 
     Box(modifier = modifier.fillMaxWidth()) {
         Box(
@@ -99,7 +111,7 @@ fun LogInForm(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (errorMessage != null) {
+            if (!errorMessage.isNullOrEmpty()) {
                 Text(
                     text = errorMessage, style = MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.error
@@ -107,7 +119,6 @@ fun LogInForm(
                 )
             }
 
-            // Loading o botones
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -115,16 +126,14 @@ fun LogInForm(
             } else {
                 MyButton(
                     text = "Iniciar Sesión",
-                    onClick = { onClick(email, password) },
+                    onClick = onClick,
                     style = MyButtonStyle.Primary,
-                    enabled = isLoginEnabled,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
