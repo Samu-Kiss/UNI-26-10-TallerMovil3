@@ -45,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.compose.AppTheme
 import com.google.firebase.auth.FirebaseAuth
+import samu.kiss.myapplication.navigation.AppScreens
 import samu.kiss.myapplication.models.MyUser
 import samu.kiss.myapplication.models.MyUsersViewModel
 import samu.kiss.myapplication.models.UserLocationViewModel
@@ -224,7 +225,9 @@ fun UserCard(
                             Toast.makeText(
                                 context, "Ubicando a ${user.name}", Toast.LENGTH_SHORT
                             ).show()
-                            //TODO : Implementar pantalla de seguimiento en tiempo real
+                            if (user.available == true) {
+                                navController.navigate("${AppScreens.UserTracking.name}/${user.uid}")
+                            }
                         }) {
                         Icon(
                             imageVector = Icons.Rounded.LocationOn,
