@@ -6,11 +6,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 import samu.kiss.myapplication.models.UserLocationViewModel
 import samu.kiss.myapplication.ui.screens.*
 
 enum class AppScreens {
-    Splash, SignUp, LogIn, Home, Users
+    Splash, SignUp, LogIn, Home, Users, UserTracking
 }
 
 @Composable
@@ -33,6 +35,13 @@ fun Navigation(locationViewModel: UserLocationViewModel = viewModel()) {
         }
         composable(route = AppScreens.Users.name) {
             UsersScreen(navController,locationViewModel)
+        }
+        composable(
+            route = "${AppScreens.UserTracking.name}/{targetUid}",
+            arguments = listOf(navArgument("targetUid") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val targetUid = backStackEntry.arguments?.getString("targetUid").orEmpty()
+            UserTrackingScreen(navController, targetUid, locationViewModel)
         }
     }
 }
