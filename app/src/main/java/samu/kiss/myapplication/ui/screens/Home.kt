@@ -8,43 +8,50 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
+import samu.kiss.myapplication.R
 import samu.kiss.myapplication.models.Location
 import samu.kiss.myapplication.models.UserLocationViewModel
 import samu.kiss.myapplication.ui.components.MyScaffold
 import samu.kiss.myapplication.utils.loadLocations
 
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, MapsComposeExperimentalApi::class)
 @Composable
 fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationViewModel) {
     val state by locationViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val bogota = LatLng(4.627293, -74.063228)
     var userPosition: Location? = null
-    val bogotaMarkerState = rememberUpdatedMarkerState(position = bogota)
+    rememberUpdatedMarkerState(position = bogota)
     var hasCenteredCamera by remember { mutableStateOf(false) }
     val markers = loadLocations(context)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(bogota, 12f)
     }
     var permission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    var showButton by remember { mutableStateOf(false) }
     LaunchedEffect(state.latitude, state.longitude) {
         if (!hasCenteredCamera && state.latitude != 0.0 && state.longitude != 0.0) {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(
@@ -56,6 +63,9 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
     LaunchedEffect(Unit) {
         locationViewModel.observeAvailableFromFirebase()
     }
+
+    val mapId = stringResource(R.string.map_id)
+
 
     SideEffect {
         if (!permission.status.isGranted) {
@@ -76,8 +86,18 @@ fun HomeScreen(controller: NavHostController, locationViewModel: UserLocationVie
             verticalArrangement = Arrangement.Center
         ) {
             GoogleMap(
-                modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState
-            ) {
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().apply {
+                        mapId(mapId)
+                        mapType(GoogleMap.MAP_TYPE_NORMAL)
+
+                    }
+                }) {
+                MapEffect(Unit) { googleMap ->
+                    googleMap.mapColorScheme = MapColorScheme.FOLLOW_SYSTEM
+                }
                 markers.forEach { markerData ->
                     Marker(
                         state = rememberUpdatedMarkerState(
