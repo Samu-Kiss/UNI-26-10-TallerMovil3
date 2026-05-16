@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase
 import samu.kiss.myapplication.auth
 import samu.kiss.myapplication.models.LoginViewModel
 import samu.kiss.myapplication.models.MyApp
+import samu.kiss.myapplication.navigation.AppScreens
 import samu.kiss.myapplication.ui.components.AuthEmailText
 import samu.kiss.myapplication.ui.components.AuthPasswordText
 import samu.kiss.myapplication.ui.components.AuthTemplate
@@ -42,7 +44,6 @@ fun LogInScreen(
     controller: NavHostController, loginViewModel: LoginViewModel = viewModel()
 ) {
     val state = loginViewModel.loginState.collectAsState().value
-
     AuthTemplate {
         LogInForm(
             email = state.email,

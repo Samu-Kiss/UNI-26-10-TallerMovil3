@@ -26,6 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import kotlinx.coroutines.delay
+import samu.kiss.myapplication.auth
 import samu.kiss.myapplication.navigation.AppScreens
 import samu.kiss.myapplication.ui.components.AuthTemplate
 import samu.kiss.myapplication.ui.components.MyButton
@@ -45,7 +46,9 @@ fun SplashScreen(
             headerVisible = true
             delay(800)
             ctaVisible = true
-
+            auth.currentUser?.let{
+                controller.navigate(AppScreens.Home.name)
+            }
         }
 
         // Header animado en el centro
