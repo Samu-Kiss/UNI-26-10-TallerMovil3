@@ -1,8 +1,11 @@
 package samu.kiss.myapplication.models
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.messaging
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import samu.kiss.myapplication.auth
 import samu.kiss.myapplication.common.validEmailAddress
 import samu.kiss.myapplication.common.validPassword
+import samu.kiss.myapplication.models.MyApp.Companion.fcmToken
 
 data class RegisterState(
     val name: String = "",
@@ -104,7 +108,16 @@ class RegisterViewModel : ViewModel() {
         FirebaseDatabase.getInstance().getReference("users").child(uid).setValue(user)
             .addOnSuccessListener {
                 _registerState.update { it.copy(isLoading = false) }
-                onSuccess()
+                Firebase.messaging.token.addOnSuccessListener { token ->
+                    fcmToken = token
+                    FirebaseDatabase.getInstance().getReference("tokens/"+auth.currentUser!!.uid).setValue(fcmToken).addOnSuccessListener {
+                        Log.i("FirebaseApp", "Token guardado correctamente")
+                        onSuccess()
+                    }.addOnFailureListener { e ->
+                        Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                        onSuccess()
+                    }
+                }
             }.addOnFailureListener { e ->
                 _registerState.update {
                     it.copy(

@@ -1,12 +1,17 @@
 package samu.kiss.myapplication.models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.messaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import samu.kiss.myapplication.auth
 import samu.kiss.myapplication.common.validEmailAddress
 import samu.kiss.myapplication.common.validPassword
+import samu.kiss.myapplication.models.MyApp.Companion.fcmToken
 
 data class LoginState(
     val email: String = "",
@@ -67,6 +72,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun login(onSuccess: () -> Unit) {
+        Log.i("FirebaseApp", "Ingresando")
         if (!validate()) return
 
         val email = _loginState.value.email
@@ -75,7 +81,16 @@ class LoginViewModel : ViewModel() {
         setLoading(true)
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
             setLoading(false)
-            onSuccess()
+            Firebase.messaging.token.addOnSuccessListener { token ->
+                fcmToken = token
+                FirebaseDatabase.getInstance().getReference("tokens/"+auth.currentUser!!.uid).setValue(fcmToken).addOnSuccessListener {
+                    Log.i("FirebaseApp", "Token guardado correctamente")
+                    onSuccess()
+                }.addOnFailureListener { e ->
+                    Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                    onSuccess()
+                }
+            }
         }.addOnFailureListener { e ->
             setLoading(false)
             updatePasswordError(e.localizedMessage ?: "Error al iniciar sesión")

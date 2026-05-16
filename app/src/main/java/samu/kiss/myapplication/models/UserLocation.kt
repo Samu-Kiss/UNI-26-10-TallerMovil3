@@ -9,15 +9,19 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.messaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import samu.kiss.myapplication.auth
+import samu.kiss.myapplication.models.MyApp.Companion.fcmToken
 import samu.kiss.myapplication.utils.createLocationCallback
 import samu.kiss.myapplication.utils.createLocationRequest
 
@@ -125,13 +129,32 @@ class UserLocationViewModel(application: Application) : AndroidViewModel(applica
         if (uid != null) {
             dbUsers.child(uid).updateChildren(mapOf("available" to false))
                 .addOnCompleteListener {
-                    FirebaseAuth.getInstance().signOut()
+                    Firebase.messaging.token.addOnSuccessListener { token ->
+                        fcmToken = token
+                        FirebaseDatabase.getInstance().getReference("tokens/"+auth.currentUser!!.uid).setValue(null).addOnSuccessListener {
+                            Log.i("FirebaseApp", "Token guardado correctamente")
+                            FirebaseAuth.getInstance().signOut()
+                        }.addOnFailureListener { e ->
+                            Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                            FirebaseAuth.getInstance().signOut()
+                        }
+                    }
+                    //FirebaseAuth.getInstance().signOut()
                     _isAvailable.value = false
                     permissionGranted = false
                     onComplete()
                 }
         } else {
-            FirebaseAuth.getInstance().signOut()
+            Firebase.messaging.token.addOnSuccessListener { token ->
+                fcmToken = token
+                FirebaseDatabase.getInstance().getReference("tokens/"+auth.currentUser!!.uid).setValue(null).addOnSuccessListener {
+                    Log.i("FirebaseApp", "Token guardado correctamente")
+                    FirebaseAuth.getInstance().signOut()
+                }.addOnFailureListener { e ->
+                    Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                    FirebaseAuth.getInstance().signOut()
+                }
+            }
             _isAvailable.value = false
             permissionGranted = false
             onComplete()

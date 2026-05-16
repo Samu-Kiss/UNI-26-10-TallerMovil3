@@ -12,13 +12,15 @@ class MyApp : Application() {
     companion object{
         const val NOTIFICATION_CHANNEL_ID =
             "notificaion_fcm"
+        var fcmToken: String? = null
     }
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        Firebase.messaging.token.addOnSuccessListener {
+        Firebase.messaging.token.addOnSuccessListener { token ->
+            fcmToken = token
             Log.i("FirebaseApp"
-                , "Token: "+it.toString())
+                , "Token: "+token)
         }
     }
     private fun createNotificationChannel(){

@@ -27,7 +27,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import com.google.firebase.database.FirebaseDatabase
+import samu.kiss.myapplication.auth
 import samu.kiss.myapplication.models.LoginViewModel
+import samu.kiss.myapplication.models.MyApp
 import samu.kiss.myapplication.ui.components.AuthEmailText
 import samu.kiss.myapplication.ui.components.AuthPasswordText
 import samu.kiss.myapplication.ui.components.AuthTemplate
