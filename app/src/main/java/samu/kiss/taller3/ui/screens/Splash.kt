@@ -34,7 +34,7 @@ import samu.kiss.taller3.ui.components.MyButtonStyle
 
 @Composable
 fun SplashScreen(
-    controller: NavHostController
+    controller: NavHostController, onAuthReady: () -> Unit = {}
 ) {
     AuthTemplate {
         var ctaVisible by remember { mutableStateOf(false) }
@@ -47,6 +47,7 @@ fun SplashScreen(
             delay(800)
             ctaVisible = true
             auth.currentUser?.let{
+                onAuthReady()
                 controller.navigate(AppScreens.Home.name)
             }
         }

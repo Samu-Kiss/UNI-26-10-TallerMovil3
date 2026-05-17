@@ -91,13 +91,6 @@ fun UserTrackingScreen(
             navController.popBackStack()
         }
     }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            locationViewModel.setAvailable(false)
-        }
-    }
-
     SideEffect {
         if (!permission.status.isGranted) {
             permission.launchPermissionRequest()
