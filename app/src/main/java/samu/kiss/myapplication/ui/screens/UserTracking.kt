@@ -3,8 +3,10 @@ package samu.kiss.myapplication.ui.screens
 import android.location.Location
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -16,21 +18,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -46,6 +49,7 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import samu.kiss.myapplication.R
 import samu.kiss.myapplication.models.MyUsersViewModel
 import samu.kiss.myapplication.models.UserLocationViewModel
+import samu.kiss.myapplication.ui.components.DistanceCard
 import samu.kiss.myapplication.ui.components.MyScaffold
 import samu.kiss.myapplication.ui.components.UserProfileBubble
 import java.util.Locale
@@ -131,18 +135,15 @@ fun UserTrackingScreen(
     val mapId = stringResource(R.string.map_id)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
-            targetPosition ?: LatLng(4.627293, -74.063228),
-            13f
+            targetPosition ?: LatLng(4.627293, -74.063228), 13f
         )
     }
 
     var hasCenteredCamera by remember { mutableStateOf(false) }
     LaunchedEffect(followerPosition, targetPosition) {
         if (!hasCenteredCamera && followerPosition != null && targetPosition != null) {
-            val bounds = LatLngBounds.builder()
-                .include(followerPosition)
-                .include(targetPosition)
-                .build()
+            val bounds =
+                LatLngBounds.builder().include(followerPosition).include(targetPosition).build()
             cameraPositionState.animate(CameraUpdateFactory.newLatLngBounds(bounds, 250))
             hasCenteredCamera = true
         }
@@ -153,11 +154,9 @@ fun UserTrackingScreen(
 
     LaunchedEffect(me?.photoUrl) {
         if (me != null && me.photoUrl.isNotEmpty()) {
-            val request = ImageRequest.Builder(context)
-                .data(me.photoUrl)
-                .size(150, 150)
-                .allowHardware(false)
-                .build()
+            val request =
+                ImageRequest.Builder(context).data(me.photoUrl).size(150, 150).allowHardware(false)
+                    .build()
             val result = context.imageLoader.execute(request)
             result.drawable?.toBitmap()?.asImageBitmap()?.let {
                 followerBitmap = it
@@ -167,11 +166,8 @@ fun UserTrackingScreen(
 
     LaunchedEffect(target.photoUrl) {
         if (target.photoUrl.isNotEmpty()) {
-            val request = ImageRequest.Builder(context)
-                .data(target.photoUrl)
-                .size(150, 150)
-                .allowHardware(false)
-                .build()
+            val request = ImageRequest.Builder(context).data(target.photoUrl).size(150, 150)
+                .allowHardware(false).build()
             val result = context.imageLoader.execute(request)
             result.drawable?.toBitmap()?.asImageBitmap()?.let {
                 targetBitmap = it
@@ -185,51 +181,59 @@ fun UserTrackingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = true,
-                    myLocationButtonEnabled = true,
-                    mapToolbarEnabled = false,
-                    compassEnabled = false
-                ),
-                googleMapOptionsFactory = {
-                    GoogleMapOptions().apply {
-                        mapId(mapId)
-                        mapType(GoogleMap.MAP_TYPE_NORMAL)
+            Box(modifier = Modifier.fillMaxSize()) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = true,
+                        myLocationButtonEnabled = true,
+                        mapToolbarEnabled = false,
+                        compassEnabled = false
+                    ),
+                    googleMapOptionsFactory = {
+                        GoogleMapOptions().apply {
+                            mapId(mapId)
+                            mapType(GoogleMap.MAP_TYPE_NORMAL)
+                        }
+                    }) {
+                    MapEffect(Unit) { googleMap ->
+                        googleMap.mapColorScheme = MapColorScheme.FOLLOW_SYSTEM
                     }
-                }
-            ) {
-                MapEffect(Unit) { googleMap ->
-                    googleMap.mapColorScheme = MapColorScheme.FOLLOW_SYSTEM
-                }
 
-                if (me != null && followerPosition != null) {
-                    val isFollowerImageReady = me.photoUrl.isEmpty() || followerBitmap != null
-                    if (isFollowerImageReady) {
-                        MarkerComposable(
-                            keys = arrayOf(me.uid, me.photoUrl),
-                            state = rememberUpdatedMarkerState(position = followerPosition),
-                            title = "Tu ubicacion"
-                        ) {
-                            UserProfileBubble(user = me, preloadedBitmap = followerBitmap)
+                    if (me != null && followerPosition != null) {
+                        val isFollowerImageReady = me.photoUrl.isEmpty() || followerBitmap != null
+                        if (isFollowerImageReady) {
+                            MarkerComposable(
+                                keys = arrayOf(me.uid, me.photoUrl),
+                                state = rememberUpdatedMarkerState(position = followerPosition),
+                                title = "Tu ubicacion"
+                            ) {
+                                UserProfileBubble(user = me, preloadedBitmap = followerBitmap)
+                            }
+                        }
+                    }
+
+                    if (targetPosition != null) {
+                        val isTargetImageReady = target.photoUrl.isEmpty() || targetBitmap != null
+                        if (isTargetImageReady) {
+                            MarkerComposable(
+                                keys = arrayOf(target.uid, target.photoUrl),
+                                state = rememberUpdatedMarkerState(position = targetPosition),
+                                title = "${target.name} - $distanceText"
+                            ) {
+                                UserProfileBubble(user = target, preloadedBitmap = targetBitmap)
+                            }
                         }
                     }
                 }
-
-                if (targetPosition != null) {
-                    val isTargetImageReady = target.photoUrl.isEmpty() || targetBitmap != null
-                    if (isTargetImageReady) {
-                        MarkerComposable(
-                            keys = arrayOf(target.uid, target.photoUrl),
-                            state = rememberUpdatedMarkerState(position = targetPosition),
-                            title = "${target.name} - $distanceText"
-                        ) {
-                            UserProfileBubble(user = target, preloadedBitmap = targetBitmap)
-                        }
-                    }
-                }
+                DistanceCard(
+                    targetName = target.name,
+                    distanceText = distanceText,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                )
             }
         }
     }
